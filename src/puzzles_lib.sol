@@ -4,12 +4,7 @@ pragma solidity ^0.8.19;
 
 library PuzzleLib {
     struct Puzzle {
-        string puzzleType;
-        string data;
-        address author;
-        uint[2] solutionCommitment;
-        uint[2] verificationKey;
-        uint maxSolvers;
+        uint puzzleDigest;
         uint numSolvers;
     }
 
