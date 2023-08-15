@@ -9,7 +9,6 @@ library PuzzleLib {
     }
 
     function verifyProof( uint[2] memory solutionCommitment, uint[2] memory g, uint[3] memory proof) internal view returns (bool) {
-
         // Initialize variables
         uint[2] memory a;
         uint z;
@@ -62,7 +61,5 @@ library PuzzleLib {
             }
         }
     }
-
-
 }
 
