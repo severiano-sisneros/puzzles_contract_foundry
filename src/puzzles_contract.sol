@@ -8,6 +8,7 @@ contract PuzzleGame {
 
     uint[2] public verificationKey = [uint(0x0000000000000000000000000000000000000000000000000000000000000001), uint(0x0000000000000000000000000000000000000000000000000000000000000002)];
     mapping(uint => PuzzleLib.Puzzle) public puzzles;
+    mapping(uint => bool) public proofUsed;
     mapping(uint => bool) public puzzleSolved;
 
     function createPuzzle(uint puzzleType, string calldata data, uint[2] calldata solutionCommitment, uint256 maxSolvers) public {
@@ -25,8 +26,11 @@ contract PuzzleGame {
         emit PuzzleCreated(puzzleDigest, puzzleType, data, msg.sender, solutionCommitment, maxSolvers);
     }
     
-    function submitProof(uint puzzleType, string calldata data, uint[2] calldata solutionCommitment, uint256 maxSolvers, uint[3] calldata proof) public {
-         uint puzzleDigest = calculatePuzzleDigest(puzzleType, data, msg.sender, solutionCommitment, maxSolvers);
+    function submitProof(address author, uint puzzleType, string calldata data, uint[2] calldata solutionCommitment, uint256 maxSolvers, uint[3] calldata proof) public {
+         uint puzzleDigest = calculatePuzzleDigest(puzzleType, data, author, solutionCommitment, maxSolvers);
+         uint proofDigest = uint(keccak256(abi.encodePacked(proof)));
+
+         require(proofUsed[proofDigest] == false, "Proof has already been used");
         
         // Get puzzle data from storage
         PuzzleLib.Puzzle storage puzzle = puzzles[puzzleDigest];
@@ -49,6 +53,9 @@ contract PuzzleGame {
 
         // Increment the number of solvers
         puzzle.numSolvers++;
+
+        // Flag the proof as already being used
+        proofUsed[proofDigest] = true;
 
         // Set the solver as having solved the puzzle
         puzzleSolved[solverDigest] = true;
